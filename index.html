@@ -1,136 +1,215 @@
 <!DOCTYPE html>
 <html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>VetCMU AQI Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
-        body, html { 
-            margin: 0; padding: 0; 
-            width: 225px; height: 390.5px; 
-            overflow: hidden; background-color: #222;
-        }
-        body { 
-            font-family: 'Kanit', sans-serif; 
-            display: flex; justify-content: center; align-items: center; 
-            transition: background-color 1s ease;
-        }
-        .container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.95);
-            padding: 15px 10px;
-            border-radius: 20px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            width: 90%;
-            display: flex; flex-direction: column; justify-content: space-between;
-            height: 90%;
-        }
-        /* Time & Date Section */
-        .time-box { margin-bottom: 5px; }
-        #clock { font-size: 50px; font-weight: 700; color: #333; margin: 0; }
-        #date { font-size: 50px; color: #555; }
-
-        /* Weather Section */
-        .weather-box { font-size: 16px; font-weight: 400; color: #444; margin: 5px 0; }
-        .temp { font-weight: 700; color: #d32f2f; }
-
-        /* AQI Section */
-        h1 { font-size: 12px; color: #333; margin: 5px 0 0 0; font-weight: 300; }
-        #aqi-value { font-size: 65px; font-weight: 700; line-height: 1; margin: 5px 0; }
-        #status-text { 
-            font-size: 14px; font-weight: 700; padding: 5px 12px;
-            border-radius: 10px; color: white; display: inline-block;
-        }
-        .location { font-size: 9px; color: #777; margin-top: 5px; }
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        width: 300px;
+        height: 980px;
+        overflow: hidden;
+        background-color: #000;
+      }
+      body {
+        /* อ้างอิงชื่อฟอนต์ CMU ที่มักจะติดตั้งในเครื่องไทย */
+        font-family: "CMU Sans Serif", "CMU Serif", "Sarabun", sans-serif;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-items: center;
+        text-align: center;
+        color: white;
+        -webkit-font-smoothing: antialiased; /* ทำให้ฟอนต์ดูคมชัดขึ้น */
+      }
+      .time-box {
+        width: 100%;
+      }
+      #clock {
+        font-size: 75px; /* ปรับขนาดขึ้นเล็กน้อยตามสไตล์ฟอนต์ CMU */
+        font-weight: 700;
+        margin: 0;
+        color: #c38fff;
+      }
+      #date {
+        font-size: 22px;
+        opacity: 0.8;
+        margin-top: 20px;
+      }
+      .weather-box {
+        font-size: 70px;
+        font-weight: 400;
+      }
+      .temp {
+        font-weight: 700;
+      }
+      .aqi-section {
+        width: 100%;
+      }
+      h1 {
+        font-size: 20px;
+        margin: 0;
+        font-weight: 400;
+        color: #ccc;
+      }
+      #aqi-value {
+        font-size: 140px; /* ฟอนต์ CMU มักจะดูบางกว่า ปรับขนาดขึ้นเพื่อให้เด่น */
+        font-weight: 700;
+        line-height: 1;
+        margin: 15px 0;
+      }
+      #status-text {
+        font-size: 34px;
+        font-weight: 700;
+        display: block;
+      }
+      .footer-info {
+        padding: 0 15px;
+        margin-bottom: 20px;
+      }
+      .location {
+        font-size: 14px;
+        font-weight: 700;
+        margin-bottom: 8px;
+      }
+      .sub-loc {
+        font-size: 12px;
+        opacity: 0.6;
+      }
     </style>
-</head>
-<body>
-
-<div class="container" id="main-card">
+  </head>
+  <body>
     <div class="time-box">
-        <div id="clock">00:00:00</div>
-        <div id="date">วันพฤหัสบดีที่ 1 ม.ค. 2569</div>
+      <div id="clock">00:00:00</div>
+      <div id="date">กำลังโหลดวันที่...</div>
     </div>
 
     <div class="weather-box">
-        อุณหภูมิ <span class="temp" id="temp-val">--</span> °C
+      <h1>อุณหภูมิ (TEMP.)</h1>
+      <span class="temp" id="temp-val">--</span>°C
     </div>
 
-    <hr style="width:80%; opacity:0.2;">
-
-    <div>
-        <h1>AQI (คณะสัตวแพทย์ มช.)</h1>
-        <div id="aqi-value">--</div>
-        <div id="status-text">Loading...</div>
+    <div class="aqi-section">
+      <h1>ดัชนีคุณภาพอากาศ (AQI)</h1>
+      <div id="aqi-value">--</div>
+      <div id="status-text">กำลังโหลด...</div>
     </div>
 
-    <div class="location">ต.สุเทพ อ.เมืองเชียงใหม่</div>
-</div>
+    <div class="footer-info">
+      <div class="location">คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเชียงใหม่</div>
+      <div class="sub-loc">
+        155 ตำบลแม่เหียะ อำเภอเมือง จังหวัดเชียงใหม่ 50100
+      </div>
+    </div>
 
-<script>
-    const TOKEN = "26eb7f1abeacbabe6777c644817ec2d12611d3b4"; // แนะนำให้เปลี่ยนเป็น Token ของคุณเพื่อความแม่นยำ
-    // พิกัดคณะสัตวแพทย์ มช. (ตำบลสุเทพ)
-    const LAT = "18.7951";
-    const LNG = "98.9529";
+    <script>
+      const TOKEN = "26eb7f1abeacbabe6777c644817ec2d12611d3b4";
+      const LAT = "18.758861708471038";
+      const LNG = "98.9403623031314";
 
-    function updateClock() {
-        const now = new Date();
-        const hours = String(now.getHours()).padStart(2, '0');
-        const minutes = String(now.getMinutes()).padStart(2, '0');
-        const seconds = String(now.getSeconds()).padStart(2, '0');
-        document.getElementById('clock').innerText = `${hours}:${minutes}:${seconds}`;
+      function updateClock() {
+        var now = new Date();
+        var h = String(now.getHours()).padStart(2, "0");
+        var m = String(now.getMinutes()).padStart(2, "0");
+        var s = String(now.getSeconds()).padStart(2, "0");
+        document.getElementById("clock").innerText = h + ":" + m + ":" + s;
 
-        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-        let thaiDate = now.toLocaleDateString('th-TH', options);
-        // แปลงปี ค.ศ. เป็น พ.ศ. (กรณี Browser ไม่แปลงให้)
+        var options = {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+        };
+        var thaiDate = now.toLocaleDateString("th-TH", options);
         if (now.getFullYear() < 2500) {
-            thaiDate = thaiDate.replace(now.getFullYear(), now.getFullYear() + 543);
+          thaiDate = thaiDate.replace(
+            now.getFullYear(),
+            now.getFullYear() + 543,
+          );
         }
-        document.getElementById('date').innerText = thaiDate;
-    }
+        document.getElementById("date").innerText = thaiDate;
+      }
 
-    async function updateData() {
-        try {
-            // ดึงข้อมูล AQI และสภาพอากาศตามพิกัด (geo)
-            const res = await fetch(`https://api.waqi.info/feed/geo:${LAT};${LNG}/?token=${TOKEN}`);
-            const json = await res.json();
-            
+      function updateData() {
+        fetch(
+          "https://api.waqi.info/feed/geo:" +
+            LAT +
+            ";" +
+            LNG +
+            "/?token=" +
+            TOKEN,
+        )
+          .then(function (response) {
+            return response.json();
+          })
+          .then(function (json) {
             if (json.status === "ok") {
-                const aqi = json.data.aqi;
-                const temp = json.data.iaqi.t ? json.data.iaqi.t.v : "--";
-                
-                const display = document.getElementById('aqi-value');
-                const status = document.getElementById('status-text');
-                const tempDisp = document.getElementById('temp-val');
-                
-                display.innerText = aqi;
-                tempDisp.innerText = temp;
-                
-                let color, label, textCol = "white";
-                if (aqi <= 50) { color = "#00e400"; label = "ดีมาก"; }
-                else if (aqi <= 100) { color = "#ffeb3b"; label = "ปานกลาง"; textCol = "#000"; }
-                else if (aqi <= 150) { color = "#ff7e00"; label = "เริ่มมีผลกระทบ"; }
-                else if (aqi <= 200) { color = "#f44336"; label = "มีผลกระทบต่อสุขภาพ"; }
-                else if (aqi <= 300) { color = "#9c27b0"; label = "อันตรายมาก"; }
-                else { color = "#7e0023"; label = "อันตรายสูงสุด"; }
+              var aqi = json.data.aqi;
+              var temp =
+                json.data.iaqi && json.data.iaqi.t ? json.data.iaqi.t.v : null;
 
-                document.body.style.backgroundColor = color;
-                display.style.color = color;
-                status.style.backgroundColor = color;
-                status.style.color = textCol;
-                status.innerText = label;
+              var aqiDisplay = document.getElementById("aqi-value");
+              var statusDisplay = document.getElementById("status-text");
+              var tempDisplay = document.getElementById("temp-val");
+
+              aqiDisplay.innerText = aqi;
+
+              if (temp !== null) {
+                tempDisplay.innerText = Math.round(temp);
+                var tColor = "#ffffff";
+                if (temp < 25) tColor = "#00bfff";
+                else if (temp < 30) tColor = "#4caf50";
+                else if (temp < 35) tColor = "#ffeb3b";
+                else if (temp < 38) tColor = "#ff9800";
+                else tColor = "#f44336";
+                tempDisplay.style.color = tColor;
+              }
+
+              var aqiColor = "#ffffff";
+              var label = "";
+              if (aqi <= 50) {
+                aqiColor = "#00e400";
+                label = "ดีมาก";
+              } else if (aqi <= 100) {
+                aqiColor = "#ffeb3b";
+                label = "ปานกลาง";
+              } else if (aqi <= 150) {
+                aqiColor = "#ff7e00";
+                label = "เริ่มมีผลกระทบ";
+              } else if (aqi <= 200) {
+                aqiColor = "#ff0000";
+                label = "มีผลกระทบต่อสุขภาพ";
+              } else if (aqi <= 300) {
+                aqiColor = "#8f3f97";
+                label = "อันตรายมาก";
+              } else {
+                aqiColor = "#7e0023";
+                label = "อันตรายสูงสุด";
+              }
+
+              aqiDisplay.style.color = aqiColor;
+              statusDisplay.style.color = aqiColor;
+              statusDisplay.innerText = label;
+            } else {
+              document.getElementById("status-text").innerText = "Data Error";
             }
-        } catch (e) {
-            console.error("Fetch Error");
-        }
-    }
+          })
+          .catch(function (err) {
+            document.getElementById("status-text").innerText = "Network Error";
+          });
+      }
 
-    // ทำงานทันทีและตั้งเวลา
-    setInterval(updateClock, 1000);
-    setInterval(updateData, 600000); // อัปเดตข้อมูลอากาศทุก 10 นาที
-    updateClock();
-    updateData();
-</script>
-</body>
+      setInterval(updateClock, 1000);
+      setInterval(updateData, 600000);
+      updateClock();
+      updateData();
+    </script>
+  </body>
 </html>
