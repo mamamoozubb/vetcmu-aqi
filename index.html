@@ -2,62 +2,135 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>VetCMU Environment Monitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VetCMU AQI Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
-        body { margin: 0; width: 450px; height: 781px; background: #1a1a1a; color: white; font-family: 'Kanit', sans-serif; display: flex; justify-content: center; align-items: center; }
-        .card { width: 90%; background: #2d2d2d; padding: 20px; border-radius: 30px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .time { font-size: 50px; font-weight: 700; }
-        .date { font-size: 20px; color: #aaa; margin-bottom: 20px; }
-        .weather-box { display: flex; justify-content: space-around; margin-bottom: 20px; }
-        .val { font-size: 30px; font-weight: 700; }
-        .label { font-size: 14px; color: #888; }
-        #aqi-display { font-size: 80px; font-weight: 700; margin: 10px 0; padding: 10px; border-radius: 20px; }
+        body, html { 
+            margin: 0; padding: 0; 
+            width: 225px; height: 390.5px; 
+            overflow: hidden; background-color: #222;
+        }
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            transition: background-color 1s ease;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 10px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            width: 90%;
+            display: flex; flex-direction: column; justify-content: space-between;
+            height: 90%;
+        }
+        /* Time & Date Section */
+        .time-box { margin-bottom: 5px; }
+        #clock { font-size: 28px; font-weight: 700; color: #333; margin: 0; }
+        #date { font-size: 11px; color: #555; }
+
+        /* Weather Section */
+        .weather-box { font-size: 16px; font-weight: 400; color: #444; margin: 5px 0; }
+        .temp { font-weight: 700; color: #d32f2f; }
+
+        /* AQI Section */
+        h1 { font-size: 12px; color: #333; margin: 5px 0 0 0; font-weight: 300; }
+        #aqi-value { font-size: 65px; font-weight: 700; line-height: 1; margin: 5px 0; }
+        #status-text { 
+            font-size: 14px; font-weight: 700; padding: 5px 12px;
+            border-radius: 10px; color: white; display: inline-block;
+        }
+        .location { font-size: 9px; color: #777; margin-top: 5px; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <div class="time" id="clock">00:00</div>
-    <div class="date" id="date">--/--/----</div>
-    <div class="weather-box">
-        <div><div class="val" id="temp">--°C</div><div class="label">อุณหภูมิ</div></div>
-        <div><div class="val" id="aqi-val">--</div><div class="label">AQI</div></div>
+<div class="container" id="main-card">
+    <div class="time-box">
+        <div id="clock">00:00:00</div>
+        <div id="date">วันพฤหัสบดีที่ 1 ม.ค. 2569</div>
     </div>
-    <div id="aqi-display">สถานะ...</div>
+
+    <div class="weather-box">
+        อุณหภูมิ <span class="temp" id="temp-val">--</span> °C
+    </div>
+
+    <hr style="width:80%; opacity:0.2;">
+
+    <div>
+        <h1>AQI (คณะสัตวแพทย์ มช.)</h1>
+        <div id="aqi-value">--</div>
+        <div id="status-text">Loading...</div>
+    </div>
+
+    <div class="location">ต.สุเทพ อ.เมืองเชียงใหม่</div>
 </div>
 
 <script>
-    // 1. นาฬิกา
+    const TOKEN = "demo"; // แนะนำให้เปลี่ยนเป็น Token ของคุณเพื่อความแม่นยำ
+    // พิกัดคณะสัตวแพทย์ มช. (ตำบลสุเทพ)
+    const LAT = "18.7951";
+    const LNG = "98.9529";
+
     function updateClock() {
         const now = new Date();
-        document.getElementById('clock').innerText = now.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit', hour12: false });
-        document.getElementById('date').innerText = now.toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' });
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const seconds = String(now.getSeconds()).padStart(2, '0');
+        document.getElementById('clock').innerText = `${hours}:${minutes}:${seconds}`;
+
+        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+        let thaiDate = now.toLocaleDateString('th-TH', options);
+        // แปลงปี ค.ศ. เป็น พ.ศ. (กรณี Browser ไม่แปลงให้)
+        if (now.getFullYear() < 2500) {
+            thaiDate = thaiDate.replace(now.getFullYear(), now.getFullYear() + 543);
+        }
+        document.getElementById('date').innerText = thaiDate;
     }
 
-    // 2. ข้อมูลสภาพอากาศและฝุ่น (ต้องใส่ API Key ของท่าน)
-    async function fetchData() {
-        // อุณหภูมิ: ต.สุเทพ
-        const lat = 18.78, lon = 98.95;
-        const weather = await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=YOUR_API_KEY&units=metric`).then(r => r.json());
-        document.getElementById('temp').innerText = Math.round(weather.main.temp) + "°C";
+    async function updateData() {
+        try {
+            // ดึงข้อมูล AQI และสภาพอากาศตามพิกัด (geo)
+            const res = await fetch(`https://api.waqi.info/feed/geo:${LAT};${LNG}/?token=${TOKEN}`);
+            const json = await res.json();
+            
+            if (json.status === "ok") {
+                const aqi = json.data.aqi;
+                const temp = json.data.iaqi.t ? json.data.iaqi.t.v : "--";
+                
+                const display = document.getElementById('aqi-value');
+                const status = document.getElementById('status-text');
+                const tempDisp = document.getElementById('temp-val');
+                
+                display.innerText = aqi;
+                tempDisp.innerText = temp;
+                
+                let color, label, textCol = "white";
+                if (aqi <= 50) { color = "#00e400"; label = "ดีมาก"; }
+                else if (aqi <= 100) { color = "#ffeb3b"; label = "ปานกลาง"; textCol = "#000"; }
+                else if (aqi <= 150) { color = "#ff7e00"; label = "เริ่มมีผลกระทบ"; }
+                else if (aqi <= 200) { color = "#f44336"; label = "มีผลกระทบต่อสุขภาพ"; }
+                else if (aqi <= 300) { color = "#9c27b0"; label = "อันตรายมาก"; }
+                else { color = "#7e0023"; label = "อันตรายสูงสุด"; }
 
-        // AQI: ใกล้ คณะสัตวแพทย์ มช. (สถานีรหัส: @13396 หรือใกล้เคียง)
-        const aqiRes = await fetch(`https://api.waqi.info/feed/geo:${lat};${lon}/?token=YOUR_WAQI_TOKEN`).then(r => r.json());
-        const aqi = aqiRes.data.aqi;
-        const disp = document.getElementById('aqi-display');
-        document.getElementById('aqi-val').innerText = aqi;
-        
-        // กำหนดสีมาตรฐานสากล
-        let color = aqi <= 50 ? "#00e400" : aqi <= 100 ? "#ffeb3b" : aqi <= 150 ? "#ff7e00" : "#ff0000";
-        disp.innerText = aqi <= 50 ? "ดีมาก" : aqi <= 100 ? "ปานกลาง" : aqi <= 150 ? "เริ่มมีผลกระทบ" : "มีผลกระทบ";
-        disp.style.backgroundColor = color;
-        disp.style.color = aqi <= 100 ? "#000" : "#fff";
+                document.body.style.backgroundColor = color;
+                display.style.color = color;
+                status.style.backgroundColor = color;
+                status.style.color = textCol;
+                status.innerText = label;
+            }
+        } catch (e) {
+            console.error("Fetch Error");
+        }
     }
 
+    // ทำงานทันทีและตั้งเวลา
     setInterval(updateClock, 1000);
-    fetchData();
-    setInterval(fetchData, 600000);
+    setInterval(updateData, 600000); // อัปเดตข้อมูลอากาศทุก 10 นาที
+    updateClock();
+    updateData();
 </script>
 </body>
 </html>
