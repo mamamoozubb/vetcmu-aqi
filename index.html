@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>PM2.5 Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; }
+        body { 
+            font-family: 'Kanit', sans-serif; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            transition: background-color 1s ease;
+            background-color: #222;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.92);
+            padding: 5vh 5vw;
+            border-radius: 50px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            width: 80%;
+        }
+        h1 { font-size: 4vh; color: #333; margin: 0; }
+        #aqi-value { 
+            font-size: 25vh; /* ใหญ่พิเศษสำหรับจอ TV */
+            font-weight: 700; 
+            margin: -2vh 0;
+            line-height: 1;
+        }
+        #status-text { 
+            font-size: 6vh; 
+            font-weight: 700; 
+            padding: 2vh 4vw;
+            border-radius: 100px;
+            display: inline-block;
+            color: white;
+        }
+        .footer { font-size: 2vh; color: #666; margin-top: 4vh; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>คุณภาพอากาศ (AQI) เชียงใหม่</h1>
+    <div id="aqi-value">--</div>
+    <div id="status-text">Loading...</div>
+    <div class="footer">อัปเดตข้อมูลอัตโนมัติจาก WAQI.info</div>
+</div>
+
+<script>
+    const TOKEN = "demo"; // แนะนำให้เปลี่ยนเป็น Token จริงของคุณ
+    const CITY = "chiangmai";
+
+    async function updateAQI() {
+        try {
+            const res = await fetch(`https://api.waqi.info/feed/${CITY}/?token=${TOKEN}`);
+            const json = await res.json();
+            if (json.status === "ok") {
+                const aqi = json.data.aqi;
+                const display = document.getElementById('aqi-value');
+                const status = document.getElementById('status-text');
+                
+                display.innerText = aqi;
+                
+                let color, label, textCol = "white";
+                if (aqi <= 50) { color = "#00e400"; label = "ดีมาก"; }
+                else if (aqi <= 100) { color = "#ffeb3b"; label = "ปานกลาง"; textCol = "#000"; }
+                else if (aqi <= 150) { color = "#ff7e00"; label = "เริ่มมีผลกระทบ"; }
+                else if (aqi <= 200) { color = "#f44336"; label = "มีผลกระทบต่อสุขภาพ"; }
+                else { color = "#9c27b0"; label = "อันตรายมาก"; }
+
+                document.body.style.backgroundColor = color;
+                display.style.color = color;
+                status.style.backgroundColor = color;
+                status.style.color = textCol;
+                status.innerText = label;
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    updateAQI();
+    setInterval(updateAQI, 600000); // อัปเดตทุก 10 นาที
+</script>
+</body>
+</html>
