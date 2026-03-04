@@ -13,94 +13,121 @@
       html {
         margin: 0;
         padding: 0;
-        width: 300px;
+        /* ปรับขนาดตามความต้องการใหม่ */
+        width: 447px;
         height: 980px;
         overflow: hidden;
         background-color: #000;
       }
       body {
-        /* อ้างอิงชื่อฟอนต์ CMU ที่มักจะติดตั้งในเครื่องไทย */
         font-family: "CMU Sans Serif", "CMU Serif", "Sarabun", sans-serif;
         display: flex;
         flex-direction: column;
-        justify-content: space-evenly;
         align-items: center;
         text-align: center;
         color: white;
-        -webkit-font-smoothing: antialiased; /* ทำให้ฟอนต์ดูคมชัดขึ้น */
+        -webkit-font-smoothing: antialiased;
       }
-      .time-box {
+
+      /* เส้นคั่นระหว่างส่วน */
+      .divider {
+        width: 80%;
+        height: 1px;
+        background: rgba(255, 255, 255, 0.2); /* เส้นสีขาวจางๆ */
+        margin: 10px 0;
+      }
+
+      /* จัดการพื้นที่แต่ละส่วน */
+      .section {
         width: 100%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
+
+      /* เวลาและวันที่ */
       #clock {
-        font-size: 75px; /* ปรับขนาดขึ้นเล็กน้อยตามสไตล์ฟอนต์ CMU */
+        font-size: 90px; /* ขยายขนาดตามความกว้างจอที่เพิ่มขึ้น */
         font-weight: 700;
         margin: 0;
         color: #c38fff;
       }
       #date {
-        font-size: 22px;
+        font-size: 26px;
         opacity: 0.8;
-        margin-top: 20px;
+        margin-top: 10px;
       }
+
+      /* อุณหภูมิ */
       .weather-box {
-        font-size: 70px;
+        font-size: 100px;
         font-weight: 400;
       }
       .temp {
         font-weight: 700;
       }
-      .aqi-section {
-        width: 100%;
-      }
+
+      /* AQI Section */
       h1 {
-        font-size: 20px;
+        font-size: 24px;
         margin: 0;
         font-weight: 400;
         color: #ccc;
+        letter-spacing: 1px;
       }
       #aqi-value {
-        font-size: 140px; /* ฟอนต์ CMU มักจะดูบางกว่า ปรับขนาดขึ้นเพื่อให้เด่น */
+        font-size: 160px; /* ขยายตัวเลข AQI ให้เต็มตามากขึ้น */
         font-weight: 700;
         line-height: 1;
-        margin: 15px 0;
+        margin: 10px 0;
       }
       #status-text {
-        font-size: 34px;
+        font-size: 42px;
         font-weight: 700;
         display: block;
       }
+
+      /* ส่วนท้าย */
       .footer-info {
-        padding: 0 15px;
-        margin-bottom: 20px;
+        width: 100%;
+        padding: 20px 0;
+        background: rgba(255, 255, 255, 0.05); /* เน้นส่วนท้ายเล็กน้อย */
       }
       .location {
-        font-size: 14px;
+        font-size: 18px;
         font-weight: 700;
-        margin-bottom: 8px;
+        margin-bottom: 5px;
       }
       .sub-loc {
-        font-size: 12px;
+        font-size: 15px;
         opacity: 0.6;
       }
     </style>
   </head>
   <body>
-    <div class="time-box">
+    <div class="section">
       <div id="clock">00:00:00</div>
       <div id="date">กำลังโหลดวันที่...</div>
     </div>
 
-    <div class="weather-box">
+    <div class="divider"></div>
+
+    <div class="section weather-box">
       <h1>อุณหภูมิ (TEMP.)</h1>
-      <span class="temp" id="temp-val">--</span>°C
+      <div><span class="temp" id="temp-val">--</span>°C</div>
     </div>
 
-    <div class="aqi-section">
+    <div class="divider"></div>
+
+    <div class="section aqi-section">
       <h1>ดัชนีคุณภาพอากาศ (AQI)</h1>
       <div id="aqi-value">--</div>
       <div id="status-text">กำลังโหลด...</div>
     </div>
+
+    <div class="divider"></div>
 
     <div class="footer-info">
       <div class="location">คณะสัตวแพทยศาสตร์ มหาวิทยาลัยเชียงใหม่</div>
