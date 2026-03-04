@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PM2.5 Dashboard - Chiang Mai</title>
+    <title>PM2.5 Mini Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* ล็อกขนาดหน้าจอให้พอดีกับ 450x781 */
+        /* ล็อกขนาดหน้าจอลง 50% (เหลือ 225x390.5) */
         body, html { 
             margin: 0; 
             padding: 0; 
-            width: 200px; 
-            height: 300px; 
+            width: 225px; 
+            height: 390.5px; 
             overflow: hidden; 
             background-color: #222;
         }
@@ -27,44 +27,44 @@
         .container {
             text-align: center;
             background: rgba(255, 255, 255, 0.95);
-            padding: 40px 20px;
-            border-radius: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            width: 85%; /* ปรับความกว้างให้พอดีกับแนวตั้ง */
+            padding: 20px 10px; /* ลดลง 50% */
+            border-radius: 20px; /* ลดลง 50% */
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            width: 85%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-height: 500px;
+            min-height: 250px; /* ลดลง 50% */
         }
 
         h1 { 
-            font-size: 28px; 
+            font-size: 14px; /* ลดลง 50% */
             color: #333; 
             margin: 0; 
             line-height: 1.2;
         }
 
         #aqi-value { 
-            font-size: 140px; /* ปรับขนาดให้พอดีกับความกว้าง 450px */
+            font-size: 70px; /* ลดลง 50% จาก 140px */
             font-weight: 700; 
-            margin: 20px 0;
+            margin: 10px 0;
             line-height: 1;
         }
 
         #status-text { 
-            font-size: 32px; 
+            font-size: 16px; /* ลดลง 50% จาก 32px */
             font-weight: 700; 
-            padding: 15px 30px;
-            border-radius: 20px;
+            padding: 7px 15px; /* ลดลง 50% */
+            border-radius: 10px;
             display: inline-block;
             color: white;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .footer { 
-            font-size: 16px; 
+            font-size: 8px; /* ลดลง 50% จาก 16px */
             color: #666; 
-            margin-top: 20px; 
+            margin-top: 10px; 
         }
     </style>
 </head>
@@ -76,11 +76,11 @@
     <div>
         <div id="status-text">Loading...</div>
     </div>
-    <div class="footer">อัปเดตข้อมูลอัตโนมัติจาก WAQI.info</div>
+    <div class="footer">WAQI.info Real-time</div>
 </div>
 
 <script>
-    const TOKEN = "demo"; // แนะนำให้เปลี่ยนเป็น Token จริงของคุณ
+    const TOKEN = "demo"; 
     const CITY = "chiangmai";
 
     async function updateAQI() {
@@ -108,13 +108,12 @@
                 status.innerText = label;
             }
         } catch (e) { 
-            console.error(e);
             document.getElementById('status-text').innerText = "Error";
         }
     }
 
     updateAQI();
-    setInterval(updateAQI, 600000); // อัปเดตทุก 10 นาที
+    setInterval(updateAQI, 600000);
 </script>
 </body>
 </html>
